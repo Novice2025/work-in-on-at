@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DABY Method | Futuristic Learning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons (e.g., speaker, spinner) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --bg-deep: #03030b;
+            --bg-surface: #0a0a1f;
+            --accent-primary: #8a2be2; /* Violet */
+            --accent-secondary: #00f2ff; /* Cyan */
+            --accent-glow: rgba(0, 242, 255, 0.4);
+            --text-main: #f0f0ff;
+            --text-dim: #94a3b8;
+            --border-glow: rgba(138, 43, 226, 0.3);
+            --transition-speed: 0.4s;
+            --glass: rgba(10, 10, 31, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-bg-hover: rgba(255, 255, 255, 0.05);
+            --tab-active-text: #000;
+            --tab-inactive-text: var(--text-dim);
+            --tab-inactive-bg: rgba(5, 5, 20, 0.9);
+        }
+
+        /* Base Styles */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Inter", sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            line-height: 1.6;
+            position: relative;
+            background-attachment: fixed;
+            /* Enhanced background with more depth and animation */
+            background-image:
+                radial-gradient(circle at 80% 20%, rgba(138, 43, 226, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(0, 242, 255, 0.1) 0%, transparent 40%),
+                linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+        }
+
+        /* Animated Starfield/Particle Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: -1; /* Behind other content */
+            animation: starfield 60s linear infinite;
+            opacity: 0.5;
+            pointer-events: none;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 100px, #ccc, rgba(0,0,0,0));
+            background-size: 300px 300px; /* Adjust for density */
+        }
+
+        @keyframes starfield {
+            from { background-position: 0 0; }
+            to { background-position: 100% 100%; }
+        }
+
+        /* Subtle scanline/CRT effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 1px,
+                rgba(0, 242, 255, 0.03) 1px,
+                rgba(0, 242, 255, 0.03) 2px
+            );
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.3;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 40px auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header-group {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-title {
+            font-size: clamp(40px, 10vw, 80px);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -4px;
+            margin: 0;
+            background: linear-gradient(to right, #fff 20%, var(--accent-secondary) 50%, var(--accent-primary) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.3));
+            animation: textGlow 3s infinite alternate;
+        }
+
+        @keyframes textGlow {
+            0% { filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.3)); }
+            50% { filter: drop-shadow(0 0 25px rgba(138, 43, 226, 0.5)); }
+            100% { filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.3)); }
+        }
+
+        .header-sub {
+            font-size: 12px;
+            letter-spacing: 6px;
+            color: var(--accent-secondary);
+            text-transform: uppercase;
+            margin-top: -5px;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(0, 242, 255, 0.5);
+        }
+
+        /* Welcome Box */
+        .welcome-box {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-radius: 30px;
+            padding: 30px;
+            border: 1px solid var(--border-glow);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent-primary);
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-box::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(transparent, rgba(138, 43, 226, 0.2), transparent);
+            animation: rotateBorder 8s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotateBorder {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tabs */
+        .tabs-wrapper {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 8px;
+            background: var(--tab-inactive-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            scrollbar-width: none;
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.2);
+        }
+
+        .tabs::-webkit-scrollbar { display: none; }
+
+        .tab {
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 13px;
+            border-radius: 100px;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--tab-inactive-text);
+            transition: all var(--transition-speed) ease-in-out;
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab:hover {
+            color: var(--accent-secondary);
+            background: rgba(0, 242, 255, 0.05);
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        .tab.active {
+            background: var(--accent-secondary);
+            color: var(--tab-active-text);
+            box-shadow: 0 0 20px var(--accent-glow);
+            transform: scale(1.05);
+            border-color: var(--accent-secondary);
+        }
+
+        /* Card Sections */
+        .card-section {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .card-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--bg-surface);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(138, 43, 226, 0.2);
+        }
+
+        /* Gradient Table */
+        .gradient-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            margin-top: 20px;
+        }
+
+        .gradient-table th {
+            text-align: left;
+            padding: 12px 20px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-secondary);
+            background: rgba(0, 242, 255, 0.05);
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+        }
+
+        .gradient-table td {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            transition: background 0.3s ease;
+        }
+
+        .gradient-table tr:hover td {
+            background: var(--card-bg-hover);
+        }
+
+        .gradient-table tbody tr:first-child td { border-top-left-radius: 8px; border-top-right-radius: 8px; }
+        .gradient-table tbody tr:last-child td { border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+
+        /* Moving Line */
+        .moving-line {
+            height: 2px; /* Thicker line */
+            width: 100%;
+            background: linear-gradient(90deg, transparent, var(--accent-secondary), var(--accent-primary), transparent); /* More vibrant gradient */
+            position: absolute;
+            left: -100%;
+            bottom: 0;
+            animation: slideLine 4s infinite linear; /* Slower animation */
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        @keyframes slideLine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Token Display */
+        .token-display {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .main-expression {
+            font-size: clamp(32px, 8vw, 64px);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+
+        /* Sub-block Title */
+        .sub-block-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin: 40px 0 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-shadow: 0 0 8px rgba(138, 43, 226, 0.5);
+        }
+
+        .sub-block-title::before, .sub-block-title::after {
+            content: "";
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(138, 43, 226, 0.5), transparent);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+
+        /* Audio Button */
+        .audio-btn {
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid var(--accent-secondary);
+            color: var(--accent-secondary);
+            padding: 12px 30px;
+            border-radius: 100px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+        }
+
+        .audio-btn:hover {
+            background: var(--accent-secondary);
+            color: #000;
+            box-shadow: 0 0 30px var(--accent-glow);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .audio-btn:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .audio-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: rgba(0, 242, 255, 0.05);
+            box-shadow: none;
+            transform: none;
+        }
+
+        .audio-btn .icon {
+            font-size: 1.2em;
+        }
+
+        /* Label */
+        .label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent-primary);
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: block;
+            text-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
+        }
+
+        /* Explanation Grid */
+        .explanation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .explanation-item {
+            padding: 24px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-top: 3px solid var(--accent-secondary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .explanation-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 15px var(--accent-glow);
+        }
+
+        .explanation-item h4 {
+            margin: 0 0 12px 0;
+            color: var(--accent-secondary);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(0, 242, 255, 0.3);
+        }
+
+        .explanation-item p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-dim);
+        }
+
+        .explanation-item strong {
+            color: var(--accent-secondary);
+            text-shadow: 0 0 5px rgba(0, 242, 255, 0.2);
+        }
+
+        .explanation-item em {
+            color: var(--accent-primary);
+            font-style: normal;
+            text-shadow: 0 0 5px rgba(138, 43, 226, 0.2);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .explanation-grid { grid-template-columns: 1fr; }
+            .tabs { justify-content: flex-start; }
+        }
+
+        @media (max-width: 600px) {
+            .container { width: 94%; margin: 20px auto; }
+            .header-title { font-size: 45px; letter-spacing: -2px; }
+            .card { padding: 20px; }
+            .gradient-table td, .gradient-table th { padding: 10px; font-size: 12px; }
+            .tabs { padding: 6px; gap: 6px; }
+            .tab { padding: 8px 15px; font-size: 12px; }
+            .main-expression { font-size: 40px; }
+            .sub-block-title { font-size: 16px; }
+            .audio-btn { padding: 10px 20px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="header-group">
+        <h1 class="header-title">DABY</h1>
+        <div class="header-sub">Blockchain-Logic Interface</div>
+    </header>
+
+    <div class="welcome-box">
+        <span class="label">System Status</span>
+        <h2 style="margin: 5px 0 15px 0; font-weight: 800;">Module: Prepositional Logic</h2>
+        <p style="color: var(--text-dim); font-size: 15px; margin: 0;">Contextualizing geographical and occupational "in/at/on" usage.</p>
+    </div>
+
+    <div class="tabs-wrapper">
+        <div class="tabs" id="tabContainer">
+            <div class="tab active" data-target="view-region">Region</div>
+            <div class="tab" data-target="view-company">Company Name</div>
+            <div class="tab" data-target="view-team">Team</div>
+            <div class="tab" data-target="view-department">Department</div>
+            <div class="tab" data-target="view-workon">Work On</div>
+            <div class="tab" data-target="view-meeting">Meeting</div>
+        </div>
+    </div>
+
+    <!-- Region View -->
+    <section id="view-region" class="card-section active">
+        <div class="card token-display">
+            <span class="label">Professional Context</span>
+            <div class="main-expression">Work in (region)</div>
+            <button class="audio-btn" onclick="speakText(this, 'I work in São Paulo')"><i class="fas fa-volume-up icon"></i> Listen</button>
+            <div style="position: relative; padding-top: 10px;">
+                <div class="moving-line"></div>
+                <table class="gradient-table">
+                    <thead><tr><th>English Expression</th><th>Tradução</th></tr></thead>
+                    <tbody>
+                        <tr><td>I <strong>work in</strong> São Paulo.</td><td>Trabalho em São Paulo.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="sub-block-title">Residency Context</div>
+            <div class="main-expression" style="background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Live in (region)</div>
+            <button class="audio-btn" onclick="speakText(this, 'I live in Brazil')"><i class="fas fa-volume-up icon"></i> Listen</button>
+            <table class="gradient-table">
+                <tbody><tr><td>I <strong>live in</strong> Brazil.</td><td>Eu moro no Brasil.</td></tr></tbody>
+            </table>
+            <div class="explanation-grid">
+                <div class="explanation-item">
+                    <h4>The Logic (EN)</h4>
+                    <p>Cities and countries are <strong>containers</strong>. You are physically <em>inside</em> them whether working or living.</p>
+                </div>
+                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
+                    <h4>A Lógica (PT)</h4>
+                    <p>Cidades e países são <strong>recipientes</strong>. Você está fisicamente <em>dentro</em> deles, seja trabalhando ou morando.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Company Name View -->
+    <section id="view-company" class="card-section">
+        <div class="card token-display">
+            <span class="label">Organizational Context</span>
+            <div class="main-expression">Work at (company)</div>
+            <button class="audio-btn" onclick="speakText(this, 'I work at Google')"><i class="fas fa-volume-up icon"></i> Listen</button>
+            <table class="gradient-table">
+                <tbody>
+                    <tr><td>I <strong>work at</strong> Google.</td><td>Eu trabalho no Google.</td></tr>
+                    <tr><td>She <strong>works at</strong> Apple.</td><td>Ela trabalha na Apple.</td></tr>
+                </tbody>
+            </table>
+            <div class="explanation-grid">
+                <div class="explanation-item">
+                    <h4>The Logic (EN)</h4>
+                    <p>Companies are treated as <strong>Specific Points</strong> or institutions. <strong>"At"</strong> marks the location on the map of your career.</p>
+                </div>
+                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
+                    <h4>A Lógica (PT)</h4>
+                    <p>Empresas são tratadas como <strong>Pontos Específicos</strong>. O <strong>"At"</strong> marca a localização exata no mapa da sua carreira.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team View -->
+    <section id="view-team" class="card-section">
+        <div class="card token-display">
+            <span class="label">Collaborative Context</span>
+            <div class="main-expression">Work on a team</div>
+            <button class="audio-btn" onclick="speakText(this, 'I work on a creative team')"><i class="fas fa-volume-up icon"></i> Listen</button>
+            <table class="gradient-table">
+                <tbody>
+                    <tr><td>We <strong>work on a team</strong>.</td><td>Nós trabalhamos em uma equipe.</td></tr>
+                    <tr><td>I'm <strong>on the design team</strong>.</td><td>Estou na equipe de design.</td></tr>
+                </tbody>
+            </table>
+            <div class="explanation-grid">
+                <div class="explanation-item">
+                    <h4>The Logic (EN)</h4>
+                    <p>A team is seen as a <strong>Platform</strong> or a list. You are "on" the roster of people contributing to the group.</p>
+                </div>
+                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
+                    <h4>A Lógica (PT)</h4>
+                    <p>Uma equipe é vista como uma <strong>Plataforma</strong> ou lista. Você está "em cima" da relação de pessoas do grupo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Department View -->
+    <section id="view-department" class="card-section">
+        <div class="card token-display">
+            <span class="label">Structural Context</span>
+            <div class="main-expression">Work in (department)</div>
+            <button class="audio-btn" onclick="speakText(this, 'Work in IT')"><i class="fas fa-volume-up icon"></i> Listen</button>
+            <table class="gradient-table">
+                <tbody>
+                    <tr><td>He <strong>works in</strong> IT.</td><td>Ele trabalha no TI.</td></tr>
+                    <tr><td>They <strong>work in</strong> sales.</td><td>Eles trabalham em vendas.</td></tr>
+                </tbody>
+            </table>
+            <div class="explanation-grid">
+                <div class="explanation-item">
+                    <h4>The Logic (EN)</h4>
+                    <p>Departments are <strong>sub-sections</strong> of a building or structure. You are contained <em>inside</em> that specific division.</p>
+                </div>
+                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
+                    <h4>A Lógica (PT)</h4>
+                    <p>Departamentos são <strong>subseções</strong> de uma estrutura. Você está contido <em>dentro</em> dessa divisão específica.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work On View -->
+    <section id="view-workon" class="card-section">
+        <div class="card token-display">
+            <span class="label">Task Context</span>
+            <div class="main-expression">Work on (projects)</div>
+            <button class="audio-btn" onclick="speakText(this, 'I work on projects')"><i class="fas fa-volume-up icon"></i> Listen</button>
+            <table class="gradient-table">
+                <tbody>
+                    <tr><td>I <strong>work on</strong> projects.</td><td>Eu trabalho em projetos.</td></tr>
+                    <tr><td>I'm <strong>working on</strong> a task.</td><td>Estou trabalhando em uma tarefa.</td></tr>
+                </tbody>
+            </table>
+            <div class="explanation-grid">
+                <div class="explanation-item">
+                    <h4>The Logic (EN)</h4>
+                    <p>Projects are <strong>Surfaces</strong>. You put your energy "on top" of the task to complete it.</p>
+                </div>
+                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
+                    <h4>A Lógica (PT)</h4>
+                    <p>Projetos são <strong>Superfícies</strong>. Você coloca sua energia "sobre" a tarefa para concluí-la.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Meeting View -->
+    <section id="view-meeting" class="card-section">
+        <div class="card token-display">
+            <span class="label">Event Context</span>
+            <div class="main-expression">In (a meeting)</div>
+            <button class="audio-btn" onclick="speakText(this, 'I am in a meeting')"><i class="fas fa-volume-up icon"></i> Listen</button>
+            <table class="gradient-table">
+                <tbody>
+                    <tr><td>I'm <strong>in a meeting</strong>.</td><td>Estou em uma reunião.</td></tr>
+                    <tr><td>Stay <strong>in the call</strong>.</td><td>Fique na chamada.</td></tr>
+                </tbody>
+            </table>
+            <div class="explanation-grid">
+                <div class="explanation-item">
+                    <h4>The Logic (EN)</h4>
+                    <p>A meeting is an <strong>Enclosed Space</strong> (even virtual). You are <em>immersed</em> inside the conversation.</p>
+                </div>
+                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
+                    <h4>A Lógica (PT)</h4>
+                    <p>Uma reunião é um <strong>Espaço Fechado</strong> (mesmo virtual). Você está <em>imerso</em> dentro da conversa.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    // IMPORTANT: Vishul, remember to replace "YOUR_GEMINI_API_KEY" with your actual Gemini API key!
+    // This key is essential for the audio playback functionality.
+    const apiKey = "YOUR_GEMINI_API_KEY";
+
+    // Function to convert PCM to WAV (as provided)
+    function pcmToWav(pcmData, sampleRate) {
+        const buffer = new ArrayBuffer(44 + pcmData.length * 2);
+        const view = new DataView(buffer);
+        const writeString = (offset, string) => {
+            for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+        };
+        writeString(0, 'RIFF');
+        view.setUint32(4, 32 + pcmData.length * 2, true);
+        writeString(8, 'WAVE');
+        writeString(12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        writeString(36, 'data');
+        view.setUint32(40, pcmData.length * 2, true);
+        for (let i = 0; i < pcmData.length; i++) view.setInt16(44 + i * 2, pcmData[i], true);
+        return new Blob([buffer], { type: 'audio/wav' });
+    }
+
+    // Enhanced speakText function with better loading and error feedback
+    async function speakText(buttonElement, text) {
+        if (!apiKey || apiKey === "YOUR_GEMINI_API_KEY") {
+            alert("Please replace 'YOUR_GEMINI_API_KEY' in the script with your actual Gemini API key to enable audio playback. If running locally, ensure you're using a development server (e.g., `npm run dev` for Vue) to avoid CORS issues.");
+            console.error("API Key is missing or placeholder. Audio playback disabled.");
+            return;
+        }
+
+        buttonElement.disabled = true;
+        buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin icon"></i> Speaking...'; // Loading state with spinner
+
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: `Say this clearly for a student: ${text}` }] }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Puck" } } }
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                let errorMessage = `API error: ${response.status} - ${errorData.error.message || 'Unknown error'}`;
+                if (response.status === 403) {
+                    errorMessage += "\nPossible causes: Invalid API key, missing billing, or insufficient permissions.";
+                } else if (response.status === 400 && errorData.error.message.includes("API key not valid")) {
+                    errorMessage += "\nEnsure your API key is correct and properly configured.";
+                }
+                throw new Error(errorMessage);
+            }
+
+            const result = await response.json();
+            // Check if inlineData exists and has data
+            if (!result.candidates || !result.candidates[0] || !result.candidates[0].content || !result.candidates[0].content.parts || !result.candidates[0].content.parts[0] || !result.candidates[0].content.parts[0].inlineData || !result.candidates[0].content.parts[0].inlineData.data) {
+                throw new Error("API response did not contain expected audio data (inlineData is missing). This might indicate an issue with the API request or the service itself.");
+            }
+
+            const base64Audio = result.candidates[0].content.parts[0].inlineData.data;
+            const pcmBuffer = Uint8Array.from(atob(base64Audio), c => c.charCodeAt(0));
+            const wavBlob = pcmToWav(new Int16Array(pcmBuffer.buffer), 24000);
+            const audio = new Audio(URL.createObjectURL(wavBlob));
+
+            audio.onended = () => {
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = '<i class="fas fa-volume-up icon"></i> Listen'; // Reset button text
+            };
+            audio.onerror = (e) => {
+                console.error("Audio playback error:", e);
+                alert("Failed to play audio. This might be a browser issue or corrupted audio data. Please try again.");
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = '<i class="fas fa-volume-up icon"></i> Listen';
+            };
+            audio.play();
+        } catch (e) {
+            console.error("Error generating or playing audio:", e);
+            alert(`Failed to generate audio: ${e.message}\n\nEnsure your API key is correct, billing is enabled, and you are running the page from a web server (e.g., localhost, Netlify, GitHub Pages) to avoid CORS issues.`);
+            buttonElement.disabled = false;
+            buttonElement.innerHTML = '<i class="fas fa-volume-up icon"></i> Listen';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.tab');
+        const sections = document.querySelectorAll('.card-section');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.dataset.target;
+
+                // Remove active class from all tabs and sections
+                tabs.forEach(t => t.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+
+                // Add active class to the clicked tab and its corresponding section
+                tab.classList.add('active');
+                document.getElementById(target).classList.add('active');
+
+                // Scroll tabs into view if they are partially hidden
+                tab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+            });
+        });
+    });
+</script>
+</body>
+</html>
