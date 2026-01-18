@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DABY Method | Futuristic Learning</title>
+    <title>DABY Lego-Chain Method | Futuristic Learning</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <!-- Font Awesome for icons (e.g., speaker, spinner) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -24,6 +24,24 @@
             --tab-active-text: #000;
             --tab-inactive-text: var(--text-dim);
             --tab-inactive-bg: rgba(5, 5, 20, 0.9);
+
+            /* Drag and Drop specific colors (Fill-in-the-blank) */
+            --drag-item-bg: var(--accent-primary);
+            --drag-item-text: #fff;
+            --drop-zone-border: var(--text-dim);
+            --drop-zone-hover-border: var(--accent-secondary);
+            --drop-zone-correct-bg: rgba(0, 255, 0, 0.1);
+            --drop-zone-incorrect-bg: rgba(255, 0, 0, 0.1);
+            --drop-zone-correct-border: #0f0;
+            --drop-zone-incorrect-border: #f00;
+
+            /* Sentence Reorder Drag and Drop specific colors */
+            --reorder-item-bg: var(--bg-surface);
+            --reorder-item-border: var(--card-border);
+            --reorder-item-hover-bg: rgba(138, 43, 226, 0.2);
+            --reorder-item-dragging-border: var(--accent-secondary);
+            --reorder-result-correct: #0f0;
+            --reorder-result-incorrect: #f00;
         }
 
         /* Base Styles */
@@ -64,16 +82,18 @@
             opacity: 0.5;
             pointer-events: none;
             background-image:
-                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 90px 100px, #ccc, rgba(0,0,0,0));
-            background-size: 300px 300px; /* Adjust for density */
+                radial-gradient(2px 2px at 20% 30%, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40% 70%, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50% 160%, #ddd, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90% 100%, #ccc, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 10% 90%, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 70% 10%, #fff, rgba(0,0,0,0));
+            background-size: 300px 300px, 400px 400px, 500px 500px, 350px 350px, 450px 450px, 600px 600px; /* Multiple layers for density */
         }
 
         @keyframes starfield {
-            from { background-position: 0 0; }
-            to { background-position: 100% 100%; }
+            from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+            to { background-position: 100% 100%, -100% 100%, 100% -100%, -100% -100%, 50% 50%, -50% -50%; }
         }
 
         /* Subtle scanline/CRT effect */
@@ -143,633 +163,1115 @@
             border-radius: 30px;
             padding: 30px;
             border: 1px solid var(--border-glow);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent-primary);
+            box-shadow: 0 0 30px var(--border-glow);
             text-align: center;
             margin-bottom: 40px;
-            position: relative;
-            overflow: hidden;
+            animation: pulseBorder 4s infinite ease-in-out;
         }
 
-        .welcome-box::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: conic-gradient(transparent, rgba(138, 43, 226, 0.2), transparent);
-            animation: rotateBorder 8s linear infinite;
-            z-index: -1;
+        @keyframes pulseBorder {
+            0% { box-shadow: 0 0 15px var(--border-glow); }
+            50% { box-shadow: 0 0 30px var(--accent-secondary); }
+            100% { box-shadow: 0 0 15px var(--border-glow); }
         }
 
-        @keyframes rotateBorder {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .welcome-box h2 {
+            font-size: 2.2em;
+            color: var(--accent-secondary);
+            margin-top: 0;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.7);
         }
 
-        /* Tabs */
-        .tabs-wrapper {
-            position: sticky;
-            top: 20px;
-            z-index: 100;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: center;
+        .welcome-box p {
+            font-size: 1.1em;
+            color: var(--text-main);
+            margin-bottom: 20px;
         }
 
-        .tabs {
-            display: flex;
-            overflow-x: auto;
-            gap: 8px;
-            padding: 8px;
+        .welcome-box .cta-button {
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--tab-active-text);
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1em;
+            transition: all var(--transition-speed) ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+        }
+
+        .welcome-box .cta-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.7);
+        }
+
+        /* Tabs Navigation */
+        .tabs-container {
             background: var(--tab-inactive-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 100px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            scrollbar-width: none;
-            box-shadow: 0 0 25px rgba(0, 242, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 10px;
+            margin-bottom: 30px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+            display: flex;
+            flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
+            justify-content: center;
+            gap: 10px;
+            overflow-x: auto; /* Enable horizontal scrolling for many tabs */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            scrollbar-width: none; /* Hide scrollbar for Firefox */
+            -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
         }
 
-        .tabs::-webkit-scrollbar { display: none; }
+        .tabs-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome, Safari, Opera */
+        }
+
+        .tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--tab-inactive-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 10px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+        }
 
         .tab {
-            padding: 10px 20px;
-            font-weight: 600;
-            font-size: 13px;
-            border-radius: 100px;
-            cursor: pointer;
-            white-space: nowrap;
+            flex-shrink: 0; /* Prevent tabs from shrinking */
+            padding: 12px 20px;
+            border-radius: 15px;
+            background: var(--tab-inactive-bg);
             color: var(--tab-inactive-text);
-            transition: all var(--transition-speed) ease-in-out;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             border: 1px solid transparent;
-            position: relative;
-            overflow: hidden;
         }
 
         .tab:hover {
-            color: var(--accent-secondary);
-            background: rgba(0, 242, 255, 0.05);
-            border-color: var(--accent-secondary);
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+            background: rgba(138, 43, 226, 0.2);
+            color: var(--text-main);
+            border-color: var(--accent-primary);
         }
 
         .tab.active {
-            background: var(--accent-secondary);
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
             color: var(--tab-active-text);
-            box-shadow: 0 0 20px var(--accent-glow);
-            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--accent-glow);
             border-color: var(--accent-secondary);
+            transform: translateY(-2px);
+        }
+
+        .tab.active i {
+            color: var(--tab-active-text);
         }
 
         /* Card Sections */
         .card-section {
             display: none;
-            animation: fadeIn 0.5s ease-out forwards;
+            animation: fadeIn 0.6s ease-out forwards;
         }
 
-        .card-section.active { display: block; }
+        .card-section.active {
+            display: block;
+        }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .card {
-            background: var(--bg-surface);
-            border-radius: 24px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
             padding: 30px;
             border: 1px solid var(--card-border);
-            margin-bottom: 20px;
+            box-shadow: 0 0 25px rgba(138, 43, 226, 0.15);
+            margin-bottom: 30px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(138, 43, 226, 0.2);
-        }
-
-        /* Gradient Table */
-        .gradient-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 8px;
-            margin-top: 20px;
-        }
-
-        .gradient-table th {
-            text-align: left;
-            padding: 12px 20px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent-secondary);
-            background: rgba(0, 242, 255, 0.05);
-            border-radius: 8px 8px 0 0;
-            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
-        }
-
-        .gradient-table td {
-            padding: 15px 20px;
-            background: rgba(255, 255, 255, 0.02);
-            font-size: 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            transition: background 0.3s ease;
-        }
-
-        .gradient-table tr:hover td {
-            background: var(--card-bg-hover);
-        }
-
-        .gradient-table tbody tr:first-child td { border-top-left-radius: 8px; border-top-right-radius: 8px; }
-        .gradient-table tbody tr:last-child td { border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
-
-        /* Moving Line */
-        .moving-line {
-            height: 2px; /* Thicker line */
-            width: 100%;
-            background: linear-gradient(90deg, transparent, var(--accent-secondary), var(--accent-primary), transparent); /* More vibrant gradient */
+        .card::before {
+            content: '';
             position: absolute;
-            left: -100%;
-            bottom: 0;
-            animation: slideLine 4s infinite linear; /* Slower animation */
-            box-shadow: 0 0 15px var(--accent-glow);
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(0, 242, 255, 0.05) 0%, transparent 70%);
+            animation: rotateLight 15s linear infinite;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        @keyframes slideLine {
-            0% { left: -100%; }
-            100% { left: 100%; }
+        @keyframes rotateLight {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
-        /* Token Display */
-        .token-display {
-            text-align: center;
-            padding: 40px 20px;
+        .card > *:not(.card::before) {
+            position: relative;
+            z-index: 1;
+        }
+
+        .label {
+            display: inline-block;
+            background: var(--accent-primary);
+            color: var(--tab-active-text);
+            padding: 6px 15px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .main-expression {
-            font-size: clamp(32px, 8vw, 64px);
+            font-size: 2.5em;
             font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 25px;
-            background: linear-gradient(135deg, #fff 0%, var(--accent-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
+            color: var(--accent-secondary);
+            margin-bottom: 15px;
             text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
         }
 
-        /* Sub-block Title */
-        .sub-block-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--accent-primary);
-            margin: 40px 0 20px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-shadow: 0 0 8px rgba(138, 43, 226, 0.5);
-        }
-
-        .sub-block-title::before, .sub-block-title::after {
-            content: "";
-            flex-grow: 1;
-            height: 1px;
-            background: linear-gradient(to right, transparent, rgba(138, 43, 226, 0.5), transparent);
-            box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
-        }
-
-        /* Audio Button */
         .audio-btn {
-            background: rgba(0, 242, 255, 0.1);
-            border: 1px solid var(--accent-secondary);
-            color: var(--accent-secondary);
-            padding: 12px 30px;
-            border-radius: 100px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            background: var(--accent-primary);
+            color: var(--tab-active-text);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
             cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            transition: all 0.3s ease;
+            gap: 8px;
+            transition: all var(--transition-speed) ease;
             margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
         }
 
         .audio-btn:hover {
             background: var(--accent-secondary);
-            color: #000;
-            box-shadow: 0 0 30px var(--accent-glow);
-            transform: translateY(-3px) scale(1.02);
-        }
-
-        .audio-btn:active {
-            transform: translateY(0) scale(0.98);
-            box-shadow: 0 0 15px var(--accent-glow);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.6);
+            transform: translateY(-2px);
         }
 
         .audio-btn:disabled {
-            opacity: 0.6;
+            background: var(--text-dim);
             cursor: not-allowed;
-            background: rgba(0, 242, 255, 0.05);
             box-shadow: none;
-            transform: none;
         }
 
-        .audio-btn .icon {
-            font-size: 1.2em;
+        .gradient-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background: rgba(10, 10, 31, 0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
         }
 
-        /* Label */
-        .label {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--accent-primary);
-            font-weight: 800;
-            margin-bottom: 8px;
-            display: block;
-            text-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
-        }
-
-        /* Explanation Grid */
-        .explanation-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 30px;
+        .gradient-table th, .gradient-table td {
+            padding: 15px 20px;
             text-align: left;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--text-main);
         }
 
-        .explanation-item {
-            padding: 24px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-top: 3px solid var(--accent-secondary);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-        }
-
-        .explanation-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 15px var(--accent-glow);
-        }
-
-        .explanation-item h4 {
-            margin: 0 0 12px 0;
-            color: var(--accent-secondary);
-            font-size: 14px;
+        .gradient-table th {
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--tab-active-text);
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 0.9em;
+        }
+
+        .gradient-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .gradient-table tr:nth-child(even) {
+            background-color: rgba(10, 10, 31, 0.6);
+        }
+
+        .gradient-table strong {
+            color: var(--accent-secondary);
             text-shadow: 0 0 5px rgba(0, 242, 255, 0.3);
         }
 
-        .explanation-item p {
-            margin: 0;
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--text-dim);
+        .explanation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
         }
 
-        .explanation-item strong {
-            color: var(--accent-secondary);
-            text-shadow: 0 0 5px rgba(0, 242, 255, 0.2);
+        .explanation-item {
+            background: rgba(10, 10, 31, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.1);
         }
 
-        .explanation-item em {
+        .explanation-item h4 {
             color: var(--accent-primary);
-            font-style: normal;
-            text-shadow: 0 0 5px rgba(138, 43, 226, 0.2);
+            font-size: 1.2em;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 8px rgba(138, 43, 226, 0.4);
         }
 
-        /* Responsive Adjustments */
+        .explanation-item p {
+            color: var(--text-dim);
+            font-size: 0.95em;
+        }
+
+        /* Drag and Drop (Fill-in-the-blank) */
+        .drag-drop-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(10, 10, 31, 0.6);
+            border-radius: 15px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+        }
+
+        .drag-drop-container h3 {
+            color: var(--accent-secondary);
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .sentence-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1em;
+            color: var(--text-main);
+        }
+
+        .drop-zone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            min-height: 35px;
+            border: 2px dashed var(--drop-zone-border);
+            border-radius: 8px;
+            background-color: rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+            font-weight: 600;
+            color: var(--text-dim);
+            padding: 5px 10px;
+        }
+
+        .drop-zone.hover {
+            border-color: var(--drop-zone-hover-border);
+            background-color: rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .drop-zone.filled {
+            border-style: solid;
+            border-color: var(--accent-primary);
+            background-color: rgba(138, 43, 226, 0.2);
+            color: var(--text-main);
+        }
+
+        .drop-zone.correct {
+            border-color: var(--drop-zone-correct-border);
+            background-color: var(--drop-zone-correct-bg);
+            color: #0f0;
+        }
+
+        .drop-zone.incorrect {
+            border-color: var(--drop-zone-incorrect-border);
+            background-color: var(--drop-zone-incorrect-bg);
+            color: #f00;
+        }
+
+        .draggable-items-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            background: rgba(5, 5, 20, 0.8);
+        }
+
+        .drag-item {
+            padding: 10px 15px;
+            background: var(--drag-item-bg);
+            color: var(--drag-item-text);
+            border-radius: 8px;
+            cursor: grab;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .drag-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .drag-item.dragging {
+            opacity: 0.6;
+            transform: scale(0.95);
+            cursor: grabbing;
+        }
+
+        /* Reorder Drag and Drop (Sentence Reorder) */
+        .reorder-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(10, 10, 31, 0.6);
+            border-radius: 15px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.1);
+        }
+
+        .reorder-title {
+            color: var(--accent-primary);
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .reorder-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            min-height: 60px;
+            border: 2px dashed var(--reorder-item-border);
+            border-radius: 10px;
+            padding: 15px;
+            background: rgba(5, 5, 20, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .reorder-item {
+            padding: 10px 15px;
+            background: var(--reorder-item-bg);
+            border: 1px solid var(--reorder-item-border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-weight: 600;
+            cursor: grab;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px; /* Ensure words have enough space */
+        }
+
+        .reorder-item:hover {
+            background: var(--reorder-item-hover-bg);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .reorder-item.dragging {
+            opacity: 0.6;
+            border-color: var(--reorder-item-dragging-border);
+            transform: scale(0.95);
+            cursor: grabbing;
+        }
+
+        .reorder-result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1em;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reorder-result.correct {
+            background-color: var(--drop-zone-correct-bg);
+            color: var(--reorder-result-correct);
+            border: 1px solid var(--reorder-result-correct);
+        }
+
+        .reorder-result.incorrect {
+            background-color: var(--drop-zone-incorrect-bg);
+            color: var(--reorder-result-incorrect);
+            border: 1px solid var(--reorder-result-incorrect);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .action-buttons button {
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .check-btn, .reorder-check-btn {
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--tab-active-text);
+        }
+
+        .check-btn:hover, .reorder-check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.6);
+        }
+
+        .reset-btn {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-dim);
+            border: 1px solid var(--card-border);
+        }
+
+        .reset-btn:hover {
+            background: rgba(148, 163, 184, 0.3);
+            color: var(--text-main);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .explanation-grid { grid-template-columns: 1fr; }
-            .tabs { justify-content: flex-start; }
-        }
+            .container {
+                width: 95%;
+                margin: 20px auto;
+            }
 
-        @media (max-width: 600px) {
-            .container { width: 94%; margin: 20px auto; }
-            .header-title { font-size: 45px; letter-spacing: -2px; }
-            .card { padding: 20px; }
-            .gradient-table td, .gradient-table th { padding: 10px; font-size: 12px; }
-            .tabs { padding: 6px; gap: 6px; }
-            .tab { padding: 8px 15px; font-size: 12px; }
-            .main-expression { font-size: 40px; }
-            .sub-block-title { font-size: 16px; }
-            .audio-btn { padding: 10px 20px; font-size: 12px; }
+            .header-title {
+                font-size: clamp(30px, 8vw, 50px);
+            }
+
+            .main-expression {
+                font-size: 1.8em;
+            }
+
+            .tab-nav {
+                gap: 8px;
+            }
+
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.85em;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .explanation-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <header class="header-group">
-        <h1 class="header-title">DABY</h1>
-        <div class="header-sub">Blockchain-Logic Interface</div>
-    </header>
-
-    <div class="welcome-box">
-        <span class="label">System Status</span>
-        <h2 style="margin: 5px 0 15px 0; font-weight: 800;">Module: Prepositional Logic</h2>
-        <p style="color: var(--text-dim); font-size: 15px; margin: 0;">Contextualizing geographical and occupational "in/at/on" usage.</p>
-    </div>
-
-    <div class="tabs-wrapper">
-        <div class="tabs" id="tabContainer">
-            <div class="tab active" data-target="view-region">Region</div>
-            <div class="tab" data-target="view-company">Company Name</div>
-            <div class="tab" data-target="view-team">Team</div>
-            <div class="tab" data-target="view-department">Department</div>
-            <div class="tab" data-target="view-workon">Work On</div>
-            <div class="tab" data-target="view-meeting">Meeting</div>
+    <div class="container">
+        <!-- Header -->
+        <div class="header-group">
+            <h1 class="header-title">DABY Lego-Chain Method</h1>
+            <p class="header-sub">Unlock English Prepositions</p>
         </div>
-    </div>
 
-    <!-- Region View -->
-    <section id="view-region" class="card-section active">
-        <div class="card token-display">
-            <span class="label">Professional Context</span>
-            <div class="main-expression">Work in (region)</div>
-            <button class="audio-btn" onclick="speakText(this, 'I work in São Paulo')"><i class="fas fa-volume-up icon"></i> Listen</button>
-            <div style="position: relative; padding-top: 10px;">
-                <div class="moving-line"></div>
+        <!-- Welcome Box -->
+        <div class="welcome-box">
+            <h2>🚀 Welcome to Your Learning Journey</h2>
+            <p>Unlock the power of English prepositions with our futuristic, interactive platform. Designed for adult learners with ADHD, this method breaks down complex grammar into bite-sized, engaging lessons.</p>
+            <button class="cta-button" onclick="document.querySelector('.tab-nav .tab').click()">Start Learning</button>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <div class="tab" data-target="view-region"><i class="fas fa-map-marker-alt"></i> Region</div>
+            <div class="tab" data-target="view-company"><i class="fas fa-building"></i> Company</div>
+            <div class="tab" data-target="view-team"><i class="fas fa-users"></i> Team</div>
+            <div class="tab" data-target="view-department"><i class="fas fa-sitemap"></i> Department</div>
+            <div class="tab" data-target="view-workon"><i class="fas fa-hammer"></i> Work On</div>
+            <div class="tab" data-target="view-meeting"><i class="fas fa-phone"></i> Meeting</div>
+            <div class="tab" data-target="view-practice"><i class="fas fa-puzzle-piece"></i> Practice</div>
+        </div>
+
+        <!-- REGION TAB -->
+        <section id="view-region" class="card-section">
+            <div class="card">
+                <span class="label">🌍 Location Context</span>
+                <div class="main-expression">In (a region)</div>
+                <button class="audio-btn" onclick="speakText(this, 'I work in Brazil')"><i class="fas fa-volume-up"></i> Listen</button>
                 <table class="gradient-table">
-                    <thead><tr><th>English Expression</th><th>Tradução</th></tr></thead>
                     <tbody>
-                        <tr><td>I <strong>work in</strong> São Paulo.</td><td>Trabalho em São Paulo.</td></tr>
+                        <tr><td>I work <strong>in</strong> São Paulo.</td><td>Trabalho em São Paulo.</td></tr>
+                        <tr><td>She lives <strong>in</strong> Brazil.</td><td>Ela mora no Brasil.</td></tr>
+                        <tr><td>They are <strong>in</strong> Europe.</td><td>Eles estão na Europa.</td></tr>
                     </tbody>
                 </table>
-            </div>
-            <div class="sub-block-title">Residency Context</div>
-            <div class="main-expression" style="background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Live in (region)</div>
-            <button class="audio-btn" onclick="speakText(this, 'I live in Brazil')"><i class="fas fa-volume-up icon"></i> Listen</button>
-            <table class="gradient-table">
-                <tbody><tr><td>I <strong>live in</strong> Brazil.</td><td>Eu moro no Brasil.</td></tr></tbody>
-            </table>
-            <div class="explanation-grid">
-                <div class="explanation-item">
-                    <h4>The Logic (EN)</h4>
-                    <p>Cities and countries are <strong>containers</strong>. You are physically <em>inside</em> them whether working or living.</p>
+                <div class="explanation-grid">
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-lightbulb"></i> The Logic (EN)</h4>
+                        <p>A region is a <strong>Large Area</strong>. You are always <em>inside</em> the region, so you use <strong>IN</strong>.</p>
+                    </div>
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-brain"></i> A Lógica (PT)</h4>
+                        <p>Uma região é uma <strong>Área Grande</strong>. Você está sempre <em>dentro</em> da região, então usa <strong>IN</strong>.</p>
+                    </div>
                 </div>
-                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
-                    <h4>A Lógica (PT)</h4>
-                    <p>Cidades e países são <strong>recipientes</strong>. Você está fisicamente <em>dentro</em> deles, seja trabalhando ou morando.</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Company Name View -->
-    <section id="view-company" class="card-section">
-        <div class="card token-display">
-            <span class="label">Organizational Context</span>
-            <div class="main-expression">Work at (company)</div>
-            <button class="audio-btn" onclick="speakText(this, 'I work at Google')"><i class="fas fa-volume-up icon"></i> Listen</button>
-            <table class="gradient-table">
-                <tbody>
-                    <tr><td>I <strong>work at</strong> Google.</td><td>Eu trabalho no Google.</td></tr>
-                    <tr><td>She <strong>works at</strong> Apple.</td><td>Ela trabalha na Apple.</td></tr>
-                </tbody>
-            </table>
-            <div class="explanation-grid">
-                <div class="explanation-item">
-                    <h4>The Logic (EN)</h4>
-                    <p>Companies are treated as <strong>Specific Points</strong> or institutions. <strong>"At"</strong> marks the location on the map of your career.</p>
-                </div>
-                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
-                    <h4>A Lógica (PT)</h4>
-                    <p>Empresas são tratadas como <strong>Pontos Específicos</strong>. O <strong>"At"</strong> marca a localização exata no mapa da sua carreira.</p>
+                <!-- Reorder Exercise for Region -->
+                <div class="reorder-box">
+                    <div class="reorder-title">🧩 Reorder the Sentence</div>
+                    <ul class="reorder-list" id="reorder-region">
+                        <li class="reorder-item" data-order="2" draggable="true">work</li>
+                        <li class="reorder-item" data-order="4" draggable="true">Brazil.</li>
+                        <li class="reorder-item" data-order="1" draggable="true">I</li>
+                        <li class="reorder-item" data-order="3" draggable="true">in</li>
+                    </ul>
+                    <button class="reorder-check-btn" onclick="checkReorderOrder('region', ['1','2','3','4'])">Check Order</button>
+                    <div class="reorder-result" id="region-result"></div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Team View -->
-    <section id="view-team" class="card-section">
-        <div class="card token-display">
-            <span class="label">Collaborative Context</span>
-            <div class="main-expression">Work on a team</div>
-            <button class="audio-btn" onclick="speakText(this, 'I work on a creative team')"><i class="fas fa-volume-up icon"></i> Listen</button>
-            <table class="gradient-table">
-                <tbody>
-                    <tr><td>We <strong>work on a team</strong>.</td><td>Nós trabalhamos em uma equipe.</td></tr>
-                    <tr><td>I'm <strong>on the design team</strong>.</td><td>Estou na equipe de design.</td></tr>
-                </tbody>
-            </table>
-            <div class="explanation-grid">
-                <div class="explanation-item">
-                    <h4>The Logic (EN)</h4>
-                    <p>A team is seen as a <strong>Platform</strong> or a list. You are "on" the roster of people contributing to the group.</p>
+        <!-- COMPANY TAB -->
+        <section id="view-company" class="card-section">
+            <div class="card">
+                <span class="label">🏢 Organizational Context</span>
+                <div class="main-expression">At (a company)</div>
+                <button class="audio-btn" onclick="speakText(this, 'She works at Microsoft')"><i class="fas fa-volume-up"></i> Listen</button>
+                <table class="gradient-table">
+                    <tbody>
+                        <tr><td>She works <strong>at</strong> Google.</td><td>Ela trabalha na Google.</td></tr>
+                        <tr><td>He is <strong>at</strong> Apple.</td><td>Ele está na Apple.</td></tr>
+                        <tr><td>They are <strong>at</strong> the company.</td><td>Eles estão na empresa.</td></tr>
+                    </tbody>
+                </table>
+                <div class="explanation-grid">
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-lightbulb"></i> The Logic (EN)</h4>
+                        <p>A company is seen as a <strong>Specific Point or Institution</strong> where you perform work. You are <em>associated with</em> it, so you use <strong>AT</strong>.</p>
+                    </div>
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-brain"></i> A Lógica (PT)</h4>
+                        <p>Uma empresa é vista como um <strong>Ponto Específico ou Instituição</strong> onde você trabalha. Você está <em>associado a</em> ela, então usa <strong>AT</strong>.</p>
+                    </div>
                 </div>
-                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
-                    <h4>A Lógica (PT)</h4>
-                    <p>Uma equipe é vista como uma <strong>Plataforma</strong> ou lista. Você está "em cima" da relação de pessoas do grupo.</p>
+
+                <!-- Reorder Exercise for Company -->
+                <div class="reorder-box">
+                    <div class="reorder-title">🧩 Reorder the Sentence</div>
+                    <ul class="reorder-list" id="reorder-company">
+                        <li class="reorder-item" data-order="3" draggable="true">at</li>
+                        <li class="reorder-item" data-order="1" draggable="true">She</li>
+                        <li class="reorder-item" data-order="4" draggable="true">Microsoft.</li>
+                        <li class="reorder-item" data-order="2" draggable="true">works</li>
+                    </ul>
+                    <button class="reorder-check-btn" onclick="checkReorderOrder('company', ['1','2','3','4'])">Check Order</button>
+                    <div class="reorder-result" id="company-result"></div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Department View -->
-    <section id="view-department" class="card-section">
-        <div class="card token-display">
-            <span class="label">Structural Context</span>
-            <div class="main-expression">Work in (department)</div>
-            <button class="audio-btn" onclick="speakText(this, 'Work in IT')"><i class="fas fa-volume-up icon"></i> Listen</button>
-            <table class="gradient-table">
-                <tbody>
-                    <tr><td>He <strong>works in</strong> IT.</td><td>Ele trabalha no TI.</td></tr>
-                    <tr><td>They <strong>work in</strong> sales.</td><td>Eles trabalham em vendas.</td></tr>
-                </tbody>
-            </table>
-            <div class="explanation-grid">
-                <div class="explanation-item">
-                    <h4>The Logic (EN)</h4>
-                    <p>Departments are <strong>sub-sections</strong> of a building or structure. You are contained <em>inside</em> that specific division.</p>
+        <!-- TEAM TAB -->
+        <section id="view-team" class="card-section">
+            <div class="card">
+                <span class="label">🤝 Group Context</span>
+                <div class="main-expression">On (a team)</div>
+                <button class="audio-btn" onclick="speakText(this, 'He is on the development team')"><i class="fas fa-volume-up"></i> Listen</button>
+                <table class="gradient-table">
+                    <tbody>
+                        <tr><td>He is <strong>on</strong> the marketing team.</td><td>Ele está na equipe de marketing.</td></tr>
+                        <tr><td>She is <strong>on</strong> my team.</td><td>Ela está na minha equipe.</td></tr>
+                        <tr><td>They are <strong>on</strong> the project team.</td><td>Eles estão na equipe do projeto.</td></tr>
+                    </tbody>
+                </table>
+                <div class="explanation-grid">
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-lightbulb"></i> The Logic (EN)</h4>
+                        <p>A team is a <strong>Surface or a Group</strong> you are part of. You are <em>a member of</em> it, so you use <strong>ON</strong>.</p>
+                    </div>
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-brain"></i> A Lógica (PT)</h4>
+                        <p>Uma equipe é uma <strong>Superfície ou um Grupo</strong> do qual você faz parte. Você é <em>um membro de</em>, então usa <strong>ON</strong>.</p>
+                    </div>
                 </div>
-                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
-                    <h4>A Lógica (PT)</h4>
-                    <p>Departamentos são <strong>subseções</strong> de uma estrutura. Você está contido <em>dentro</em> dessa divisão específica.</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Work On View -->
-    <section id="view-workon" class="card-section">
-        <div class="card token-display">
-            <span class="label">Task Context</span>
-            <div class="main-expression">Work on (projects)</div>
-            <button class="audio-btn" onclick="speakText(this, 'I work on projects')"><i class="fas fa-volume-up icon"></i> Listen</button>
-            <table class="gradient-table">
-                <tbody>
-                    <tr><td>I <strong>work on</strong> projects.</td><td>Eu trabalho em projetos.</td></tr>
-                    <tr><td>I'm <strong>working on</strong> a task.</td><td>Estou trabalhando em uma tarefa.</td></tr>
-                </tbody>
-            </table>
-            <div class="explanation-grid">
-                <div class="explanation-item">
-                    <h4>The Logic (EN)</h4>
-                    <p>Projects are <strong>Surfaces</strong>. You put your energy "on top" of the task to complete it.</p>
-                </div>
-                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
-                    <h4>A Lógica (PT)</h4>
-                    <p>Projetos são <strong>Superfícies</strong>. Você coloca sua energia "sobre" a tarefa para concluí-la.</p>
+                <!-- Reorder Exercise for Team -->
+                <div class="reorder-box">
+                    <div class="reorder-title">🧩 Reorder the Sentence</div>
+                    <ul class="reorder-list" id="reorder-team">
+                        <li class="reorder-item" data-order="4" draggable="true">the</li>
+                        <li class="reorder-item" data-order="2" draggable="true">is</li>
+                        <li class="reorder-item" data-order="6" draggable="true">team.</li>
+                        <li class="reorder-item" data-order="1" draggable="true">He</li>
+                        <li class="reorder-item" data-order="3" draggable="true">on</li>
+                        <li class="reorder-item" data-order="5" draggable="true">development</li>
+                    </ul>
+                    <button class="reorder-check-btn" onclick="checkReorderOrder('team', ['1','2','3','4','5','6'])">Check Order</button>
+                    <div class="reorder-result" id="team-result"></div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Meeting View -->
-    <section id="view-meeting" class="card-section">
-        <div class="card token-display">
-            <span class="label">Event Context</span>
-            <div class="main-expression">In (a meeting)</div>
-            <button class="audio-btn" onclick="speakText(this, 'I am in a meeting')"><i class="fas fa-volume-up icon"></i> Listen</button>
-            <table class="gradient-table">
-                <tbody>
-                    <tr><td>I'm <strong>in a meeting</strong>.</td><td>Estou em uma reunião.</td></tr>
-                    <tr><td>Stay <strong>in the call</strong>.</td><td>Fique na chamada.</td></tr>
-                </tbody>
-            </table>
-            <div class="explanation-grid">
-                <div class="explanation-item">
-                    <h4>The Logic (EN)</h4>
-                    <p>A meeting is an <strong>Enclosed Space</strong> (even virtual). You are <em>immersed</em> inside the conversation.</p>
+        <!-- DEPARTMENT TAB -->
+        <section id="view-department" class="card-section">
+            <div class="card">
+                <span class="label">📊 Departmental Context</span>
+                <div class="main-expression">In (a department)</div>
+                <button class="audio-btn" onclick="speakText(this, 'They are in the sales department')"><i class="fas fa-volume-up"></i> Listen</button>
+                <table class="gradient-table">
+                    <tbody>
+                        <tr><td>They are <strong>in</strong> the HR department.</td><td>Eles estão no departamento de RH.</td></tr>
+                        <tr><td>She works <strong>in</strong> finance.</td><td>Ela trabalha em finanças.</td></tr>
+                        <tr><td>He is <strong>in</strong> the IT department.</td><td>Ele está no departamento de TI.</td></tr>
+                    </tbody>
+                </table>
+                <div class="explanation-grid">
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-lightbulb"></i> The Logic (EN)</h4>
+                        <p>A department is a <strong>Section or Area</strong> within an organization. You are <em>contained within</em> it, so you use <strong>IN</strong>.</p>
+                    </div>
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-brain"></i> A Lógica (PT)</h4>
+                        <p>Um departamento é uma <strong>Seção ou Área</strong> dentro de uma organização. Você está <em>contido dentro</em> dele, então usa <strong>IN</strong>.</p>
+                    </div>
                 </div>
-                <div class="explanation-item" style="border-top-color: var(--accent-primary);">
-                    <h4>A Lógica (PT)</h4>
-                    <p>Uma reunião é um <strong>Espaço Fechado</strong> (mesmo virtual). Você está <em>imerso</em> dentro da conversa.</p>
+
+                <!-- Reorder Exercise for Department -->
+                <div class="reorder-box">
+                    <div class="reorder-title">🧩 Reorder the Sentence</div>
+                    <ul class="reorder-list" id="reorder-department">
+                        <li class="reorder-item" data-order="5" draggable="true">sales</li>
+                        <li class="reorder-item" data-order="1" draggable="true">They</li>
+                        <li class="reorder-item" data-order="3" draggable="true">in</li>
+                        <li class="reorder-item" data-order="6" draggable="true">department.</li>
+                        <li class="reorder-item" data-order="2" draggable="true">are</li>
+                        <li class="reorder-item" data-order="4" draggable="true">the</li>
+                    </ul>
+                    <button class="reorder-check-btn" onclick="checkReorderOrder('department', ['1','2','3','4','5','6'])">Check Order</button>
+                    <div class="reorder-result" id="department-result"></div>
                 </div>
             </div>
-        </div>
-    </section>
-</div>
+        </section>
 
-<script>
-    // IMPORTANT: Vishul, remember to replace "YOUR_GEMINI_API_KEY" with your actual Gemini API key!
-    // This key is essential for the audio playback functionality.
-    const apiKey = "YOUR_GEMINI_API_KEY";
+        <!-- WORK ON TAB -->
+        <section id="view-workon" class="card-section">
+            <div class="card">
+                <span class="label">🛠️ Project/Task Context</span>
+                <div class="main-expression">Work On (a project/task)</div>
+                <button class="audio-btn" onclick="speakText(this, 'We are working on the report')"><i class="fas fa-volume-up"></i> Listen</button>
+                <table class="gradient-table">
+                    <tbody>
+                        <tr><td>We are working <strong>on</strong> a new feature.</td><td>Estamos trabalhando em um novo recurso.</td></tr>
+                        <tr><td>She is working <strong>on</strong> her presentation.</td><td>Ela está trabalhando na apresentação dela.</td></tr>
+                        <tr><td>They are working <strong>on</strong> the budget.</td><td>Eles estão trabalhando no orçamento.</td></tr>
+                    </tbody>
+                </table>
+                <div class="explanation-grid">
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-lightbulb"></i> The Logic (EN)</h4>
+                        <p>When you "work on" something, you are <strong>Engaged with a Task or Project</strong>. You are <em>making progress on its surface</em>, so you use <strong>ON</strong>.</p>
+                    </div>
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-brain"></i> A Lógica (PT)</h4>
+                        <p>Quando você "work on" algo, você está <strong>Engajado em uma Tarefa ou Projeto</strong>. Você está <em>progredindo em sua superfície</em>, então usa <strong>ON</strong>.</p>
+                    </div>
+                </div>
 
-    // Function to convert PCM to WAV (as provided)
-    function pcmToWav(pcmData, sampleRate) {
-        const buffer = new ArrayBuffer(44 + pcmData.length * 2);
-        const view = new DataView(buffer);
-        const writeString = (offset, string) => {
-            for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
-        };
-        writeString(0, 'RIFF');
-        view.setUint32(4, 32 + pcmData.length * 2, true);
-        writeString(8, 'WAVE');
-        writeString(12, 'fmt ');
-        view.setUint32(16, 16, true);
-        view.setUint16(20, 1, true);
-        view.setUint16(22, 1, true);
-        view.setUint32(24, sampleRate, true);
-        view.setUint32(28, sampleRate * 2, true);
-        view.setUint16(32, 2, true);
-        view.setUint16(34, 16, true);
-        writeString(36, 'data');
-        view.setUint32(40, pcmData.length * 2, true);
-        for (let i = 0; i < pcmData.length; i++) view.setInt16(44 + i * 2, pcmData[i], true);
-        return new Blob([buffer], { type: 'audio/wav' });
-    }
+                <!-- Reorder Exercise for Work On -->
+                <div class="reorder-box">
+                    <div class="reorder-title">🧩 Reorder the Sentence</div>
+                    <ul class="reorder-list" id="reorder-workon">
+                        <li class="reorder-item" data-order="5" draggable="true">the</li>
+                        <li class="reorder-item" data-order="1" draggable="true">We</li>
+                        <li class="reorder-item" data-order="3" draggable="true">working</li>
+                        <li class="reorder-item" data-order="6" draggable="true">report.</li>
+                        <li class="reorder-item" data-order="2" draggable="true">are</li>
+                        <li class="reorder-item" data-order="4" draggable="true">on</li>
+                    </ul>
+                    <button class="reorder-check-btn" onclick="checkReorderOrder('workon', ['1','2','3','4','5','6'])">Check Order</button>
+                    <div class="reorder-result" id="workon-result"></div>
+                </div>
+            </div>
+        </section>
 
-    // Enhanced speakText function with better loading and error feedback
-    async function speakText(buttonElement, text) {
-        if (!apiKey || apiKey === "YOUR_GEMINI_API_KEY") {
-            alert("Please replace 'YOUR_GEMINI_API_KEY' in the script with your actual Gemini API key to enable audio playback. If running locally, ensure you're using a development server (e.g., `npm run dev` for Vue) to avoid CORS issues.");
-            console.error("API Key is missing or placeholder. Audio playback disabled.");
-            return;
+        <!-- MEETING TAB -->
+        <section id="view-meeting" class="card-section">
+            <div class="card">
+                <span class="label">🗓️ Event Context</span>
+                <div class="main-expression">At (a meeting)</div>
+                <button class="audio-btn" onclick="speakText(this, 'He is at the client meeting')"><i class="fas fa-volume-up"></i> Listen</button>
+                <table class="gradient-table">
+                    <tbody>
+                        <tr><td>He is <strong>at</strong> the conference.</td><td>Ele está na conferência.</td></tr>
+                        <tr><td>She is <strong>at</strong> a workshop.</td><td>Ela está em um workshop.</td></tr>
+                        <tr><td>They are <strong>at</strong> the team meeting.</td><td>Eles estão na reunião de equipe.</td></tr>
+                    </tbody>
+                </table>
+                <div class="explanation-grid">
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-lightbulb"></i> The Logic (EN)</h4>
+                        <p>A meeting is a <strong>Specific Event or Location</strong>. You are <em>present at</em> the event, so you use <strong>AT</strong>.</p>
+                    </div>
+                    <div class="explanation-item">
+                        <h4><i class="fas fa-brain"></i> A Lógica (PT)</h4>
+                        <p>Uma reunião é um <strong>Evento ou Local Específico</strong>. Você está <em>presente no</em> evento, então usa <strong>AT</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Reorder Exercise for Meeting -->
+                <div class="reorder-box">
+                    <div class="reorder-title">🧩 Reorder the Sentence</div>
+                    <ul class="reorder-list" id="reorder-meeting">
+                        <li class="reorder-item" data-order="5" draggable="true">client</li>
+                        <li class="reorder-item" data-order="1" draggable="true">He</li>
+                        <li class="reorder-item" data-order="3" draggable="true">at</li>
+                        <li class="reorder-item" data-order="6" draggable="true">meeting.</li>
+                        <li class="reorder-item" data-order="2" draggable="true">is</li>
+                        <li class="reorder-item" data-order="4" draggable="true">the</li>
+                    </ul>
+                    <button class="reorder-check-btn" onclick="checkReorderOrder('meeting', ['1','2','3','4','5','6'])">Check Order</button>
+                    <div class="reorder-result" id="meeting-result"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRACTICE TAB -->
+        <section id="view-practice" class="card-section">
+            <div class="card">
+                <span class="label">🎯 Practice Your Knowledge</span>
+                <div class="main-expression">Fill in the Blanks</div>
+                <p class="text-dim">Drag the correct preposition into the blank space.</p>
+
+                <div class="drag-drop-container">
+                    <h3>Complete the Sentences</h3>
+                    <div class="sentence-area">
+                        I work <div class="drop-zone" data-correct="in"></div> Brazil.
+                    </div>
+                    <div class="sentence-area">
+                        She is <div class="drop-zone" data-correct="at"></div> Microsoft.
+                    </div>
+                    <div class="sentence-area">
+                        He is <div class="drop-zone" data-correct="on"></div> the development team.
+                    </div>
+                    <div class="sentence-area">
+                        They are <div class="drop-zone" data-correct="in"></div> the sales department.
+                    </div>
+                    <div class="sentence-area">
+                        We are working <div class="drop-zone" data-correct="on"></div> the report.
+                    </div>
+                    <div class="sentence-area">
+                        He is <div class="drop-zone" data-correct="at"></div> the client meeting.
+                    </div>
+
+                    <div class="draggable-items-container" id="draggable-items">
+                        <div class="drag-item" data-value="in" draggable="true">in</div>
+                        <div class="drag-item" data-value="on" draggable="true">on</div>
+                        <div class="drag-item" data-value="at" draggable="true">at</div>
+                        <div class="drag-item" data-value="in" draggable="true">in</div>
+                        <div class="drag-item" data-value="on" draggable="true">on</div>
+                        <div class="drag-item" data-value="at" draggable="true">at</div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="check-btn" onclick="checkAnswers()">Check Answers</button>
+                        <button class="reset-btn" onclick="resetExercise()">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // IMPORTANT: Replace 'YOUR_GEMINI_API_KEY' with your actual Gemini API key
+        // Ensure your API key is kept secure and not exposed in public repositories.
+        // For client-side applications, consider using a proxy server to hide your API key.
+        const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY'; // Replace this!
+
+        // Function to shuffle an array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+            return array;
         }
 
-        buttonElement.disabled = true;
-        buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin icon"></i> Speaking...'; // Loading state with spinner
+        // --- Audio Playback Logic ---
+        async function speakText(buttonElement, textToSpeak) {
+            if (GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY' || !GEMINI_API_KEY) {
+                alert("Please replace 'YOUR_GEMINI_API_KEY' in the JavaScript code with your actual Gemini API key to enable audio playback.");
+                return;
+            }
 
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Say this clearly for a student: ${text}` }] }],
-                    generationConfig: {
-                        responseModalities: ["AUDIO"],
-                        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Puck" } } }
-                    }
-                })
+            const originalButtonHtml = buttonElement.innerHTML;
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `Generate audio for the following English text: "${textToSpeak}"`
+                            }]
+                        }],
+                        generationConfig: {
+                            responseMimeType: 'audio/mpeg', // Request MP3 audio
+                        },
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("API Error:", errorData);
+                    throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorData.error?.message || 'Unknown error'}`);
+                }
+
+                const audioBlob = await response.blob();
+                const audio = new Audio(URL.createObjectURL(audioBlob));
+
+                audio.onended = () => {
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = originalButtonHtml; // Reset button text
+                };
+                audio.onerror = (e) => {
+                    console.error("Audio playback error:", e);
+                    alert("Failed to play audio. This might be a browser issue or corrupted audio data. Check console for details.");
+                    buttonElement.disabled = false;
+                    buttonElement.innerHTML = originalButtonHtml;
+                };
+                audio.play();
+            } catch (e) {
+                console.error("Error in speakText function:", e);
+                alert(`Audio Generation Failed: ${e.message}\n\nFor debugging, please open your browser's developer console (F12) and look for error messages. Common issues: incorrect API key, billing not enabled, or CORS (if not on a dev server).`);
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = originalButtonHtml;
+            }
+        }
+
+        // --- Fill-in-the-Blank Drag and Drop Logic ---
+        let draggedItem = null;
+
+        function handleDragStart(e) {
+            draggedItem = e.target;
+            e.dataTransfer.setData('text/plain', e.target.dataset.value);
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault(); // Allow drop
+            if (e.target.classList.contains('drop-zone') && !e.target.classList.contains('filled')) {
+                e.target.classList.add('hover');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.classList.remove('hover');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            if (e.target.classList.contains('drop-zone') && !e.target.classList.contains('filled')) {
+                e.target.classList.remove('hover');
+                const data = e.dataTransfer.getData('text/plain');
+                e.target.textContent = data;
+                e.target.classList.add('filled');
+                draggedItem.style.display = 'none'; // Hide the dragged item from the source
+            }
+        }
+
+        function checkAnswers() {
+            const dropZones = document.querySelectorAll('.drop-zone');
+            let allCorrect = true;
+            dropZones.forEach(zone => {
+                const correctValue = zone.dataset.correct;
+                const droppedValue = zone.textContent.trim();
+                zone.classList.remove('correct', 'incorrect'); // Clear previous feedback
+
+                if (droppedValue === correctValue) {
+                    zone.classList.add('correct');
+                } else {
+                    zone.classList.add('incorrect');
+                    allCorrect = false;
+                }
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                let errorMessage = `API error: ${response.status} - ${errorData.error.message || 'Unknown error'}`;
-                if (response.status === 403) {
-                    errorMessage += "\nPossible causes: Invalid API key, missing billing, or insufficient permissions.";
-                } else if (response.status === 400 && errorData.error.message.includes("API key not valid")) {
-                    errorMessage += "\nEnsure your API key is correct and properly configured.";
-                }
-                throw new Error(errorMessage);
+            if (allCorrect) {
+                alert("🎉 Excellent! All answers are correct! Keep up the great work!");
+            } else {
+                alert("💡 Some answers are incorrect. Review the explanations and try again!");
             }
-
-            const result = await response.json();
-            // Check if inlineData exists and has data
-            if (!result.candidates || !result.candidates[0] || !result.candidates[0].content || !result.candidates[0].content.parts || !result.candidates[0].content.parts[0] || !result.candidates[0].content.parts[0].inlineData || !result.candidates[0].content.parts[0].inlineData.data) {
-                throw new Error("API response did not contain expected audio data (inlineData is missing). This might indicate an issue with the API request or the service itself.");
-            }
-
-            const base64Audio = result.candidates[0].content.parts[0].inlineData.data;
-            const pcmBuffer = Uint8Array.from(atob(base64Audio), c => c.charCodeAt(0));
-            const wavBlob = pcmToWav(new Int16Array(pcmBuffer.buffer), 24000);
-            const audio = new Audio(URL.createObjectURL(wavBlob));
-
-            audio.onended = () => {
-                buttonElement.disabled = false;
-                buttonElement.innerHTML = '<i class="fas fa-volume-up icon"></i> Listen'; // Reset button text
-            };
-            audio.onerror = (e) => {
-                console.error("Audio playback error:", e);
-                alert("Failed to play audio. This might be a browser issue or corrupted audio data. Please try again.");
-                buttonElement.disabled = false;
-                buttonElement.innerHTML = '<i class="fas fa-volume-up icon"></i> Listen';
-            };
-            audio.play();
-        } catch (e) {
-            console.error("Error generating or playing audio:", e);
-            alert(`Failed to generate audio: ${e.message}\n\nEnsure your API key is correct, billing is enabled, and you are running the page from a web server (e.g., localhost, Netlify, GitHub Pages) to avoid CORS issues.`);
-            buttonElement.disabled = false;
-            buttonElement.innerHTML = '<i class="fas fa-volume-up icon"></i> Listen';
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const tabs = document.querySelectorAll('.tab');
-        const sections = document.querySelectorAll('.card-section');
+        function resetExercise() {
+            const dropZones = document.querySelectorAll('.drop-zone');
+            dropZones.forEach(zone => {
+                zone.textContent = '';
+                zone.classList.remove('filled', 'correct', 'incorrect', 'hover');
+            });
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const target = tab.dataset.target;
+            const draggableItems = document.querySelectorAll('.drag-item');
+            draggableItems.forEach(item => {
+                item.style.display = 'block'; // Show all draggable items again
+                item.classList.remove('dragging');
+            });
+            draggedItem = null; // Reset dragged item
+        }
 
-                // Remove active class from all tabs and sections
-                tabs.forEach(t => t.classList.remove('active'));
-                sections.forEach(s => s.classList.remove('active'));
+        // --- Sentence Reorder Drag and Drop Logic (Universal) ---
+        let currentReorderList = null;
+        let dragStartIndex;
 
-                // Add active class to the clicked tab and its corresponding section
-                tab.classList.add('active');
-                document.getElementById(target).classList.add('active');
+        function handleReorderDragStart(e) {
+            dragStartIndex = Array.from(e.target.parentNode.children).indexOf(e.target);
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.outerHTML);
+            e.target.classList.add('dragging');
+            currentReorderList = e.target.parentNode;
+        }
 
-                // Scroll tabs into view if they are partially hidden
-                tab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+        function handleReorderDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const draggingItem = currentReorderList.querySelector('.dragging');
+            if (e.target.classList.contains('reorder-item') && e.target !== draggingItem) {
+                const items = Array.from(currentReorderList.children);
+                const overIndex = items.indexOf(e.target);
+                const draggingIndex = items.indexOf(draggingItem);
+
+                // Logic to reorder items visually
+                if (overIndex > draggingIndex) {
+                    currentReorderList.insertBefore(e.target, draggingItem);
+                } else {
+                    currentReorderList.insertBefore(draggingItem, e.target);
+                }
+            }
+        }
+
+        function handleReorderDragEnd(e) {
+            e.target.classList.remove('dragging');
+            currentReorderList = null;
+        }
+
+        function checkReorderOrder(exerciseId, correctOrder) {
+            const list = document.getElementById(`reorder-${exerciseId}`);
+            const resultDiv = document.getElementById(`${exerciseId}-result`);
+            const items = Array.from(list.children);
+            let currentOrder = items.map(item => item.dataset.order); // Use string for data-order
+
+            resultDiv.classList.remove('correct', 'incorrect');
+
+            // Compare current order with correct order
+            if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
+                resultDiv.textContent = "✅ Sentence is correct! Great job!";
+                resultDiv.classList.add('correct');
+            } else {
+                resultDiv.textContent = "❌ Incorrect order. Try rearranging the words!";
+                resultDiv.classList.add('incorrect');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab');
+            const sections = document.querySelectorAll('.card-section');
+
+            // Set the first tab and section as active on load
+            if (tabs.length > 0 && sections.length > 0) {
+                tabs[0].classList.add('active');
+                sections[0].classList.add('active');
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.dataset.target;
+
+                    // Remove active class from all tabs and sections
+                    tabs.forEach(t => t.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+
+                    // Add active class to the clicked tab and its corresponding section
+                    tab.classList.add('active');
+                    document.getElementById(target).classList.add('active');
+
+                    // Scroll tabs into view if they are partially hidden
+                    tab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                });
+            });
+
+            // Initialize Fill-in-the-Blank Drag and Drop event listeners
+            const draggableItemsContainer = document.getElementById('draggable-items');
+            if (draggableItemsContainer) {
+                draggableItemsContainer.addEventListener('dragstart', handleDragStart);
+            }
+
+            const dropZones = document.querySelectorAll('.drop-zone');
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('drop', handleDrop);
+            });
+
+            // Initialize Reorder Drag and Drop event listeners for all reorder lists
+            const reorderLists = document.querySelectorAll('.reorder-list');
+            reorderLists.forEach(list => {
+                Array.from(list.children).forEach(item => {
+                    item.addEventListener('dragstart', handleReorderDragStart);
+                    item.addEventListener('dragover', handleReorderDragOver);
+                    item.addEventListener('dragend', handleReorderDragEnd);
+                });
             });
         });
-    });
-</script>
+    </script>
 </body>
 </html>
